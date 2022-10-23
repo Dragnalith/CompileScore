@@ -125,6 +125,7 @@ namespace CompileScore
             //Meta categories only for the visualizers
             Thread,
             Timeline,
+            Folder,
 
             //Global Counters
             FullCount,
@@ -192,6 +193,7 @@ namespace CompileScore
             var EditorContextInstance = EditorContext.Instance;
             EditorContextInstance.ModeChanged += OnEditorModeChanged;
             EditorContextInstance.ConfigurationChanged += OnSolutionSettingsChanged; //Refresh settings for potential macro variables change
+            Folders.Initialize(package);
         }
 
         private void OnEditorModeChanged()
@@ -481,6 +483,7 @@ namespace CompileScore
             //Clean the data
             Session = new CompileSession();
             Folders = new CompileFolders();
+            Folders.Initialize(Package);
             HydrationFlags = 0;
             UnitsCollection.Clear();
             Totals.Clear();

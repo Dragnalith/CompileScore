@@ -48,6 +48,21 @@ namespace CompileScore.Timeline
 
                     descriptionText.Text = (node.Value as UnitValue).Name;
                 }
+                else if (node is CompileFolders.FolderTimelineNode)
+                {
+                    var folderNode = node as CompileFolders.FolderTimelineNode;
+                    var value = folderNode.Value as CompileFolder;
+                    ulong avg = folderNode.Duration;
+                    if (folderNode.UnitCount > 0)
+                    {
+                        avg /= folderNode.UnitCount;
+                    }
+                    descriptionText.Visibility = Visibility.Visible;
+                    descriptionText.Text = $"{value.Name}\n"
+                        + $"{value.Path}\n"
+                        + $"count: {folderNode.UnitCount}\n"
+                        + $"avg: {Common.UIConverters.GetTimeStr(avg)}";
+                }
                 else
                 {
                     descriptionText.Visibility = Visibility.Collapsed;

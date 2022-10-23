@@ -123,6 +123,7 @@ namespace CompileScore.Timeline
         {
             Timeline, 
             Includers,
+            Folders
         };
 
         const double NodeHeight = 20.0;
@@ -146,6 +147,7 @@ namespace CompileScore.Timeline
         private Mode CurrentMode { set; get; } = Mode.Timeline;
         private CompileValue IncludersValue { set; get; }
         private UnitValue Unit { set; get; }
+        private CompileFolder Folder { set; get; }
         private TimelineNode Root { set; get; }
         private TimelineNode Hover { set; get; }
         private TimelineNode FocusPending { set; get; }
@@ -192,9 +194,20 @@ namespace CompileScore.Timeline
 
             SetMode(Mode.Timeline);
             Unit = unit;
-            SourcePath = unitPath != null && unit != null? unitPath : CompilerData.Instance.Folders.GetUnitPath(unit);
+            SourcePath = unitPath != null && unit != null ? unitPath : CompilerData.Instance.Folders.GetUnitPath(unit);
 
             SetRoot(CompilerTimeline.Instance.LoadTimeline(Unit));
+        }
+
+        public void SetFolder(CompileFolder folder, string folderPath = null)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            SetMode(Mode.Folders);
+            Folder = folder;
+            SourcePath = folderPath != null && folderPath != null ? folderPath : folder.Path;
+
+            SetRoot(CompilerData.Instance.Folders.LoadTimeline(folder));
         }
 
         public void SetIncluders(CompileValue value, string valuePath = null)
@@ -244,6 +257,7 @@ namespace CompileScore.Timeline
 
                 if (CurrentMode != Mode.Timeline) { Unit = null; }
                 if (CurrentMode != Mode.Includers) { IncludersValue = null; }
+                if (CurrentMode != Mode.Folders) { IncludersValue = null; }
 
                 RefrehsSearchUnitBox();
             }
@@ -299,6 +313,14 @@ namespace CompileScore.Timeline
                             {
                                 SetUnit(compilerData.GetUnitByName(Unit.Name));
                             }
+                        }
+                        break;
+                    }
+                case Mode.Folders:
+                    {
+                        if (Folder != null)
+                        {
+                            SetFolder(Folder);
                         }
                         break;
                     }
@@ -530,6 +552,7 @@ namespace CompileScore.Timeline
                     contextMenuStrip.Items.Add(Common.UIHelpers.CreateContextItem("Copy Name", (sender, e) => Clipboard.SetText(value.Name)));
                 }
 
+                contextMenuStrip.Items.Add(Common.UIHelpers.CreateContextItem("Open Timeline", (a, b) => CompilerTimeline.Instance.DisplayTimeline(value)));
                 contextMenuStrip.Items.Add(Common.UIHelpers.CreateContextItem("Open File", (sender, e) => EditorUtils.OpenFile(value)));
                 contextMenuStrip.Items.Add(Common.UIHelpers.CreateContextItem("Copy Full Path", (a, b) => Clipboard.SetText(CompilerData.Instance.Folders.GetUnitPathSafe(value))));
 

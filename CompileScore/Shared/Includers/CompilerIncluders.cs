@@ -189,7 +189,7 @@ namespace CompileScore.Includers
             node.UIColor = Common.Colors.GetCategoryBackground(node.Category);
 
             //reorder children by duration
-            uint offset = node.Start;
+            ulong offset = node.Start;
             node.Children.Sort((a,b)=> a.Duration == b.Duration? 0 : (a.Duration > b.Duration? -1 : 1));
 
             foreach (Timeline.TimelineNode child in node.Children)

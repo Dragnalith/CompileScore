@@ -90,7 +90,12 @@ namespace CompileScore
             {
                 return new CompileScore.Includers.IncludersWindow();
             }
-            
+
+            if (toolWindowType == typeof(CompileScore.FoldersWindow))
+            {
+                return new CompileScore.FoldersWindow();
+            }
+
             //TODO ~ ramonv ~ fix here window management
 
             return null;

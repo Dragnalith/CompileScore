@@ -40,6 +40,15 @@
     <Compile Include="..\Shared\Includers\IncludersWindowControl.xaml.cs" Link="Shared\Includers\IncludersWindowControl.xaml.cs">
       <DependentUpon>IncludersWindowControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="..\Shared\Common\FoldersWindow.cs" Link="Shared\Common\FoldersWindow.cs" />
+    <Compile Include="..\Shared\Common\FoldersWindowControl.xaml.cs" Link="Shared\Common\FoldersWindowControl.xaml.cs">
+      <DependentUpon>FoldersWindowControl.xaml</DependentUpon>
+    </Compile>
+    <Page Include="..\Shared\Common\FoldersWindowControl.xaml">
+      <Link>Shared\Common\FoldersWindowControl.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Compile Include="..\Shared\Settings\AboutWindow.xaml.cs" Link="Shared\Settings\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>

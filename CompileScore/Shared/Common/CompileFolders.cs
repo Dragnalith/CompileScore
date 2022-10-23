@@ -1,14 +1,19 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CompileScore
 {
     public class CompileFolder
     {
+        public bool Visited { set; get; } = false;
         public string Name { set; get; }
         public string Path { set; get; }
+        public int Index { set; get; }
         public List<int> Children { set; get; }
         public List<UnitValue> Units { set; get; }
         public List<CompileValue> Includes { set; get; }
@@ -17,6 +22,15 @@ namespace CompileScore
     public class CompileFolders
     {
         private List<CompileFolder> Folders { set; get; } = new List<CompileFolder>();
+
+        private Timeline.TimelineNode _root = null;
+
+        private CompileScorePackage Package { get; set; }
+
+        public void Initialize(CompileScorePackage package)
+        {
+            Package = package;
+        }
 
         private string GetUnitPathRecursive(UnitValue unit, CompileFolder node, string fullpath)
         {
@@ -252,6 +266,7 @@ namespace CompileScore
             }
 
             list.Add(folder);
+            folder.Index = list.Count - 1;
         }
 
         public void ReadFolders(BinaryReader reader)
@@ -264,6 +279,124 @@ namespace CompileScore
                 ReadFolder(reader, folderList);
             }
             Folders = new List<CompileFolder>(folderList);
+        }
+
+        public Timeline.TimelineNode LoadTimeline(CompileFolder unit)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (_root == null)
+            {
+                _root = BuildGraphRecursive(Folders[0]);
+                InitializeTree(_root);
+            }
+            return _root;
+        }
+
+        public class FolderTimelineNode : Timeline.TimelineNode
+        {
+            public FolderTimelineNode(string label, uint start, uint duration, CompilerData.CompileCategory category, object compileValue = null)
+                : base(label, start, duration, category, compileValue)
+            { }
+            public uint UnitCount { get; set; } = 0;
+        }
+
+        public void DisplayFolders()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            FoldersWindow window = FocusFoldersWindow();
+            window.SetFolders(Folders[0]);
+        }
+
+        public FoldersWindow FocusFoldersWindow()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            // Get the instance number 0 of this tool window. This window is single instance so this instance
+            // is actually the only one.
+            // The last flag is set to true so that if the tool window does not exists it will be created.
+            FoldersWindow window = Package.FindToolWindow(typeof(FoldersWindow), 0, true) as FoldersWindow;
+            if ((null == window) || (null == window.GetFrame()))
+            {
+                throw new NotSupportedException("Cannot create folders window");
+            }
+
+            window.ProxyShow();
+
+            return window;
+        }
+
+        private FolderTimelineNode BuildGraphRecursive(CompileFolder folder)
+        {
+            //Only add each element once to avoid cycles
+            Debug.Assert(!folder.Visited);
+            folder.Visited = true;
+
+            FolderTimelineNode node = new FolderTimelineNode(null, 0, 0, CompilerData.CompileCategory.Folder, folder);
+
+            for (int i = 0; i < folder.Children.Count; ++i)
+            {
+                //Build all children 
+                FolderTimelineNode child = BuildGraphRecursive(Folders[folder.Children[i]]);
+                if (child != null)
+                {
+                    node.Duration += child.Duration;
+                    node.UnitCount += child.UnitCount;
+                    node.AddChild(child);
+                }
+            }
+
+            for (int i = 0; i < folder.Units.Count; ++i)
+            {
+                var unit = folder.Units[i];
+                var duration = unit.ValuesList[(int)CompilerData.CompileCategory.ExecuteCompiler];
+                string label = unit.Name;
+                var child = new FolderTimelineNode(label, 0, duration, CompilerData.CompileCategory.ExecuteCompiler, unit);
+                node.Duration += duration;
+                node.UnitCount += 1;
+                node.AddChild(child);
+            }
+
+            ulong avg = node.Duration;
+            if (node.UnitCount > 0)
+            {
+                avg /= node.UnitCount;
+            }
+            //fix up node
+            node.Label = folder.Name
+                + " (dur: " + Common.UIConverters.GetTimeStr(node.Duration) 
+                + ", count: " + node.UnitCount 
+                + ", avg: " + Common.UIConverters.GetTimeStr(avg)
+                + " )";
+
+            return node;
+        }
+
+        private void InitializeTree(Timeline.TimelineNode node)
+        {
+            node.Start = 0;
+            node.DepthLevel = 0;
+            InitializeNodeRecursive(node);
+        }
+
+        private void InitializeNodeRecursive(Timeline.TimelineNode node)
+        {
+            node.DepthLevel = node.Parent == null ? 0 : node.Parent.DepthLevel + 1;
+            node.MaxDepthLevel = node.DepthLevel;
+            node.UIColor = Common.Colors.GetCategoryBackground(node.Category);
+
+            //reorder children by duration
+            ulong offset = node.Start;
+            node.Children.Sort((a, b) => a.Duration == b.Duration ? 0 : (a.Duration > b.Duration ? -1 : 1));
+
+            foreach (Timeline.TimelineNode child in node.Children)
+            {
+                child.Start = offset;
+                offset += child.Duration;
+                InitializeNodeRecursive(child);
+                node.MaxDepthLevel = Math.Max(node.MaxDepthLevel, child.MaxDepthLevel);
+            }
         }
     }
 }

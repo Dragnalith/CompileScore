@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              xmlns:local="clr-namespace:CompileScore.Overview"
+             xmlns:timeline="clr-namespace:CompileScore.Timeline"
              xmlns:common="clr-namespace:CompileScore.Common"
              Background="{DynamicResource {x:Static common:ColorTheme.Background}}"
              Foreground="{DynamicResource {x:Static common:ColorTheme.Foreground}}"

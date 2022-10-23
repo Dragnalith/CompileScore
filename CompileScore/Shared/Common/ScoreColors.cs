@@ -22,6 +22,7 @@ namespace CompileScore.Common
         static Brush OtherBrush                = new SolidColorBrush(Color.FromRgb(119, 0,   0));
         static Brush ThreadBrush               = new SolidColorBrush(Color.FromRgb(75,  75,  75));
         static Brush TimelineBrush             = new SolidColorBrush(Color.FromRgb(51,  51,  51));
+        static Brush FolderBrush             = new SolidColorBrush(Color.FromRgb(216,  188,  61));
 
         static public Brush GetCategoryBackground(CompilerData.CompileCategory category)
         {
@@ -50,6 +51,7 @@ namespace CompileScore.Common
                 case CompilerData.CompileCategory.Other:                 return OtherBrush;
                 case CompilerData.CompileCategory.Thread:                return ThreadBrush;
                 case CompilerData.CompileCategory.Timeline:              return TimelineBrush;
+                case CompilerData.CompileCategory.Folder:                return FolderBrush;
             }
 
             return OtherBrush;

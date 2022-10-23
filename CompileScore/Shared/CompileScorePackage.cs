@@ -15,6 +15,7 @@ namespace CompileScore
     [ProvideToolWindow(typeof(CompileScore.Overview.OverviewWindow))]
     [ProvideToolWindow(typeof(CompileScore.Timeline.TimelineWindow))]
     [ProvideToolWindow(typeof(CompileScore.Includers.IncludersWindow))]
+    [ProvideToolWindow(typeof(CompileScore.FoldersWindow))]
     public sealed class CompileScorePackage : AsyncPackage
     {
         /// <summary>

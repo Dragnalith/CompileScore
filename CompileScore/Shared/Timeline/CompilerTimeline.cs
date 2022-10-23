@@ -23,8 +23,8 @@ namespace CompileScore.Timeline
 
         public object Value { set; get; }       
 
-        public uint Start { set; get; }
-        public uint Duration { set; get; }
+        public ulong Start { set; get; }
+        public ulong Duration { set; get; }
         public uint DepthLevel { set; get; }
         public uint MaxDepthLevel { set; get; }
         public Brush UIColor { set; get; }
@@ -183,7 +183,7 @@ namespace CompileScore.Timeline
             }
         }
 
-        private uint GetSectionDepthLevel(TimelineNode node, uint from, uint to)
+        private uint GetSectionDepthLevel(TimelineNode node, ulong from, ulong to)
         {
             if (node.Start > to || (node.Start + node.Duration) < from)
             {

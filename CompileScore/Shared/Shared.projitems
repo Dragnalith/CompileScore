@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\EditorUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\ExternalProcess.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\FileWatcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\FoldersWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\MacroEvaluator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\OutputLog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\ScoreColors.cs" />
@@ -33,6 +34,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Editor\MessageWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editor\Profiler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\FoldersWindowControl.xaml.cs">
+      <DependentUpon>FoldersWindowControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Glyph\ScoreGlyphFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Glyph\ScoreGlyphFactoryProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Glyph\ScoreGlyphTagger.cs" />
@@ -88,6 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)Editor\MessageControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Common\FoldersWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
