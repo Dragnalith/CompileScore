@@ -8,6 +8,7 @@ namespace CompileScore
     public class CompileFolder
     {
         public string Name { set; get; }
+        public string Path { set; get; }
         public List<int> Children { set; get; }
         public List<UnitValue> Units { set; get; }
         public List<CompileValue> Includes { set; get; }
@@ -169,6 +170,47 @@ namespace CompileScore
                 }
             }
             return null;
+        }
+
+        public void RecomputeCacheData()
+        {
+            RecomputePath(Folders[0], "");
+        }
+
+        public void RecomputePath(CompileFolder folder, string parentPath = "")
+        {
+            if (folder.Name == "")
+            {
+                folder.Path = parentPath;
+
+            } 
+            else if (parentPath == "")
+            {
+                folder.Path = folder.Name;
+            }
+            else
+            {
+                folder.Path = parentPath + "/" + folder.Name;
+            }
+
+            foreach (int childrenIndex in folder.Children)
+            {
+                if (childrenIndex < Folders.Count)
+                {
+                    RecomputePath(Folders[childrenIndex], folder.Path);
+                }
+            }
+
+            foreach (var value in folder.Units)
+            {
+                value.Path = folder.Path + "/" + value.Name;
+            }
+
+
+            foreach (var value in folder.Includes)
+            {
+                value.Path = folder.Path + "/" + value.Name;
+            }
         }
 
         private void ReadFolder(BinaryReader reader, List<CompileFolder> list)

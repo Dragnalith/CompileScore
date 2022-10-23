@@ -23,6 +23,7 @@ namespace CompileScore
         }
 
         public string Name { get; }
+        public string Path { get; set; }
         public uint Max { get; }
         public uint Min { get; }
         public ulong Accumulated { get; }
@@ -64,6 +65,7 @@ namespace CompileScore
         }
 
         public string Name { get; }
+        public string Path { get; set; }
         public uint Index { get; }
 
         public List<uint> ValuesList { get { return values.ToList(); } }
@@ -539,6 +541,7 @@ namespace CompileScore
                         if (Session.Version >= 6)
                         {
                             Folders.ReadFolders(reader);
+                            Folders.RecomputeCacheData();
                         }
                     }
                 }

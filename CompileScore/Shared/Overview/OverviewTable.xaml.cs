@@ -31,7 +31,16 @@ namespace CompileScore.Overview
             {
                 CreateColumn(category);
             }
-            
+
+            Binding binding = new Binding("Path");
+
+            var column = new DataGridTextColumn();
+            column.Binding = binding;
+            column.Header = "Path";
+            column.IsReadOnly = true;
+            column.Width = 200;
+            compileDataGrid.Columns.Add(column);
+
             OnDataChanged();
             CompilerData.Instance.ScoreDataChanged += OnDataChanged;
         }
