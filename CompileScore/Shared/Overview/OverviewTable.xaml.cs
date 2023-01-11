@@ -74,7 +74,7 @@ namespace CompileScore.Overview
 
         private static bool FilterCompileValue(UnitValue value, string filterText)
         {
-            return value.Name.Contains(filterText);
+            return value.Name.Contains(filterText) || value.Path.Contains(filterText);
         }
 
         private void UpdateFilterFunction()
